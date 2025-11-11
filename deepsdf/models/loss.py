@@ -50,6 +50,11 @@ class DeepSDFLoss(nn.Module):
         pred_sdf_clamped = torch.clamp(pred_sdf, -self.clamp_dist, self.clamp_dist)
         gt_sdf_clamped = torch.clamp(gt_sdf, -self.clamp_dist, self.clamp_dist)
 
+        # Check for NaN/Inf in predictions
+        if torch.isnan(pred_sdf).any() or torch.isinf(pred_sdf).any():
+            print("Warning: NaN/Inf detected in predictions")
+            pred_sdf_clamped = torch.nan_to_num(pred_sdf_clamped, nan=0.0, posinf=self.clamp_dist, neginf=-self.clamp_dist)
+
         # SDF reconstruction loss (L1)
         sdf_loss = self.l1_loss(pred_sdf_clamped, gt_sdf_clamped)
 
@@ -59,15 +64,15 @@ class DeepSDFLoss(nn.Module):
             total_loss = sdf_loss + self.latent_reg_lambda * latent_reg
 
             loss_dict = {
-                "total_loss": total_loss.item(),
-                "sdf_loss": sdf_loss.item(),
-                "latent_reg": latent_reg.item(),
+                "total_loss": total_loss.item() if not torch.isnan(total_loss) else 0.0,
+                "sdf_loss": sdf_loss.item() if not torch.isnan(sdf_loss) else 0.0,
+                "latent_reg": latent_reg.item() if not torch.isnan(latent_reg) else 0.0,
             }
         else:
             total_loss = sdf_loss
             loss_dict = {
-                "total_loss": total_loss.item(),
-                "sdf_loss": sdf_loss.item(),
+                "total_loss": total_loss.item() if not torch.isnan(total_loss) else 0.0,
+                "sdf_loss": sdf_loss.item() if not torch.isnan(sdf_loss) else 0.0,
             }
 
         return total_loss, loss_dict

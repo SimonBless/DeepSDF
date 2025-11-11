@@ -1,0 +1,31 @@
+# Ultra low memory configuration for DeepSDF (for GPUs with limited VRAM or testing)
+
+experiment_name: deepsdf_ultra_low_memory
+output_dir: ./output
+
+model:
+  latent_size: 256
+  hidden_dims: [512, 512, 512, 512, 512, 512, 512, 512]
+  dropout_prob: 0.2
+  norm_layers: [0, 1, 2, 3, 4, 5, 6, 7]
+  latent_in: [4]
+  weight_norm: true
+
+training:
+  batch_size: 2  # Minimal batch size (2 shapes per batch)
+  num_epochs: 2000
+  learning_rate: 0.0001
+  latent_lr: 0.001
+  latent_reg_lambda: 0.0001
+  clamp_dist: 0.1
+  num_samples_per_shape: 1024  # Very small: 2*1024=2048 points/batch
+  checkpoint_every: 100
+  log_every: 10
+  num_workers: 1  # Single worker
+  device: cuda
+
+data:
+  data_dir: ./data
+  train_split: train
+  val_split: val
+  test_split: test

@@ -66,15 +66,46 @@ class SDFDataset(Dataset):
         """
         sample_file = self.sample_files[idx]
 
-        if not sample_file.endswith(".npz"):
-            sample_file = sample_file + ".npz"
-
-        sample_path = os.path.join(self.data_dir, sample_file)
+        # Handle both direct .npz files and subdirectory structure
+        if sample_file.endswith(".npz"):
+            sample_path = os.path.join(self.data_dir, sample_file)
+        else:
+            # Check if it's a subdirectory with sdf.npz inside
+            subdir_path = os.path.join(self.data_dir, sample_file, "sdf.npz")
+            direct_path = os.path.join(self.data_dir, sample_file + ".npz")
+            
+            if os.path.exists(subdir_path):
+                sample_path = subdir_path
+            elif os.path.exists(direct_path):
+                sample_path = direct_path
+            else:
+                raise FileNotFoundError(
+                    f"Could not find SDF data for sample {sample_file}. "
+                    f"Tried: {subdir_path} and {direct_path}"
+                )
 
         # Load sample
         data = np.load(sample_path)
-        points = data["points"]
-        sdf = data["sdf"]
+        
+        # Handle different data formats
+        if "points" in data and "sdf" in data:
+            # Standard format: separate points and sdf arrays
+            points = data["points"]
+            sdf = data["sdf"]
+        elif "pos" in data and "neg" in data:
+            # DeepSDF format: pos/neg samples with [x, y, z, sdf] format
+            pos_samples = data["pos"]  # Shape: (N, 4) where last column is SDF
+            neg_samples = data["neg"]  # Shape: (M, 4) where last column is SDF
+            
+            # Combine positive and negative samples
+            all_samples = np.vstack([pos_samples, neg_samples])
+            points = all_samples[:, :3]  # First 3 columns are xyz
+            sdf = all_samples[:, 3:4]    # Last column is SDF value
+        else:
+            raise ValueError(
+                f"Unknown data format in {sample_path}. "
+                f"Expected 'points'/'sdf' or 'pos'/'neg' keys, got: {list(data.keys())}"
+            )
 
         # Subsample if needed
         if len(points) > self.num_samples_per_shape:

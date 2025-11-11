@@ -33,6 +33,7 @@ class TrainingConfig:
     log_every: int = 10
     num_workers: int = 4
     device: str = "cuda"
+    grad_clip: float = 1.0  # Gradient clipping max norm
 
 
 @dataclass

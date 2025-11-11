@@ -150,16 +150,27 @@ class Trainer:
             # Compute loss
             loss, loss_dict = self.criterion(sdf_pred, sdf_gt, latent_codes)
 
+            # Check for NaN in loss
+            if torch.isnan(loss) or torch.isinf(loss):
+                print(f"\nWarning: NaN/Inf loss detected at batch {batch_idx}, skipping...")
+                continue
+
             # Backward pass
             self.optimizer.zero_grad()
             self.latent_optimizer.zero_grad()
             loss.backward()
+            
+            # Gradient clipping to prevent exploding gradients
+            if hasattr(self.config.training, 'grad_clip') and self.config.training.grad_clip > 0:
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.config.training.grad_clip)
+                torch.nn.utils.clip_grad_norm_(self.latent_manager.latent_codes.parameters(), max_norm=self.config.training.grad_clip)
+            
             self.optimizer.step()
             self.latent_optimizer.step()
 
-            # Update statistics
+            # Update statistics (only if loss is valid)
             for key in epoch_losses:
-                if key in loss_dict:
+                if key in loss_dict and not (torch.isnan(torch.tensor(loss_dict[key])) or torch.isinf(torch.tensor(loss_dict[key]))):
                     epoch_losses[key] += loss_dict[key]
             num_batches += 1
 
@@ -174,7 +185,10 @@ class Trainer:
 
         # Average losses
         for key in epoch_losses:
-            epoch_losses[key] /= num_batches
+            if num_batches > 0:
+                epoch_losses[key] /= num_batches
+            else:
+                epoch_losses[key] = float('nan')
 
         return epoch_losses
 
@@ -209,15 +223,20 @@ class Trainer:
                 # Compute loss
                 _, loss_dict = self.criterion(sdf_pred, sdf_gt, latent_codes)
 
-                # Update statistics
+                # Update statistics (skip NaN values)
                 for key in val_losses:
                     if key in loss_dict:
-                        val_losses[key] += loss_dict[key]
+                        value = loss_dict[key]
+                        if not (torch.isnan(torch.tensor(value)) or torch.isinf(torch.tensor(value))):
+                            val_losses[key] += value
                 num_batches += 1
 
         # Average losses
         for key in val_losses:
-            val_losses[key] /= num_batches
+            if num_batches > 0:
+                val_losses[key] /= num_batches
+            else:
+                val_losses[key] = float('nan')
 
         # Log to tensorboard
         for key, value in val_losses.items():
