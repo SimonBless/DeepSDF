@@ -11,53 +11,53 @@ from deepsdf.data import create_dataloader
 
 def main() -> None:
     """Main training function."""
-    parser = argparse.ArgumentParser(description='Train DeepSDF model')
+    parser = argparse.ArgumentParser(description="Train DeepSDF model")
     parser.add_argument(
-        '--config',
+        "--config",
         type=str,
-        default='deepsdf/configs/default_config.yaml',
-        help='Path to configuration file',
+        default="deepsdf/configs/default_config.yaml",
+        help="Path to configuration file",
     )
     parser.add_argument(
-        '--data-dir',
+        "--data-dir",
         type=str,
         required=True,
-        help='Path to data directory',
+        help="Path to data directory",
     )
     parser.add_argument(
-        '--output-dir',
+        "--output-dir",
         type=str,
-        default='./output',
-        help='Path to output directory',
+        default="./output",
+        help="Path to output directory",
     )
     parser.add_argument(
-        '--resume',
+        "--resume",
         type=str,
         default=None,
-        help='Path to checkpoint to resume from',
+        help="Path to checkpoint to resume from",
     )
-    
+
     args = parser.parse_args()
-    
+
     # Load configuration
     config = Config.from_yaml(args.config)
     config.data.data_dir = args.data_dir
     config.output_dir = args.output_dir
-    
+
     # Create output directory
     Path(config.output_dir).mkdir(parents=True, exist_ok=True)
-    
+
     # Save configuration
-    config_save_path = Path(config.output_dir) / config.experiment_name / 'config.yaml'
+    config_save_path = Path(config.output_dir) / config.experiment_name / "config.yaml"
     config_save_path.parent.mkdir(parents=True, exist_ok=True)
     config.to_yaml(str(config_save_path))
-    
+
     # Set device
-    device = config.training.device if torch.cuda.is_available() else 'cpu'
-    print(f'Using device: {device}')
-    
+    device = config.training.device if torch.cuda.is_available() else "cpu"
+    print(f"Using device: {device}")
+
     # Create model
-    print('Creating model...')
+    print("Creating model...")
     model = DeepSDFDecoder(
         latent_size=config.model.latent_size,
         hidden_dims=config.model.hidden_dims,
@@ -66,15 +66,15 @@ def main() -> None:
         latent_in=config.model.latent_in,
         weight_norm=config.model.weight_norm,
     )
-    
+
     # Load datasets
-    print('Loading datasets...')
+    print("Loading datasets...")
     train_dataset = SDFDataset(
         data_dir=config.data.data_dir,
         split=config.data.train_split,
         num_samples_per_shape=config.training.num_samples_per_shape,
     )
-    
+
     val_dataset = None
     val_loader = None
     try:
@@ -90,21 +90,21 @@ def main() -> None:
             num_workers=config.training.num_workers,
         )
     except (ValueError, FileNotFoundError):
-        print('Validation dataset not found, training without validation')
-    
+        print("Validation dataset not found, training without validation")
+
     train_loader = create_dataloader(
         train_dataset,
         batch_size=config.training.batch_size,
         shuffle=True,
         num_workers=config.training.num_workers,
     )
-    
-    print(f'Training dataset size: {len(train_dataset)}')
+
+    print(f"Training dataset size: {len(train_dataset)}")
     if val_dataset is not None:
-        print(f'Validation dataset size: {len(val_dataset)}')
-    
+        print(f"Validation dataset size: {len(val_dataset)}")
+
     # Create trainer
-    print('Creating trainer...')
+    print("Creating trainer...")
     trainer = Trainer(
         model=model,
         train_loader=train_loader,
@@ -112,16 +112,16 @@ def main() -> None:
         config=config,
         device=device,
     )
-    
+
     # Resume from checkpoint if specified
     if args.resume is not None:
-        print(f'Resuming from checkpoint: {args.resume}')
+        print(f"Resuming from checkpoint: {args.resume}")
         trainer.load_checkpoint(args.resume)
-    
+
     # Train
-    print('Starting training...')
+    print("Starting training...")
     trainer.train()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

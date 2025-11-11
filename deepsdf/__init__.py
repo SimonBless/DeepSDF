@@ -1,7 +1,7 @@
 """
 DeepSDF: Learning Continuous Signed Distance Functions for Shape Representation
 
-This package provides a complete implementation of DeepSDF for learning implicit 
+This package provides a complete implementation of DeepSDF for learning implicit
 shape representations using signed distance functions.
 """
 
