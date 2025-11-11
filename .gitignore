@@ -205,3 +205,14 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# DeepSDF specific
+data/
+output/
+reconstructions/
+meshes/
+*.obj
+*.ply
+*.off
+*.stl
+*.npz

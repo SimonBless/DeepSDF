@@ -7,19 +7,20 @@ import torch.nn as nn
 
 class DeepSDFDecoder(nn.Module):
     """
-        DeepSDF Decoder network with skip connections.
+    DeepSDF Decoder network with skip connections.
 
-        This decoder takes a latent code concatenated with 3D coordinates
-        and predicts the signed distance value at those coordinates.
+    This decoder takes a latent code concatenated with 3D coordinates
+    and predicts the signed distance value at those coordinates.
 
-        Args:
-            latent_size: Dimension of the latent code (default: 256)
-            hidden_dims: List of hidden layer dimensions
-    +            (default: [512, 512, 512, 512, 512, 512, 512, 512])
-            dropout_prob: Dropout probability (default: 0.2)
-            norm_layers: List of layer indices where layer normalization is applied
-            latent_in: List of layer indices where latent code is concatenated (for skip connections)
-            weight_norm: Whether to use weight normalization
+    Args:
+        latent_size: Dimension of the latent code (default: 256)
+        hidden_dims: List of hidden layer dimensions
+            (default: [512, 512, 512, 512, 512, 512, 512, 512])
+        dropout_prob: Dropout probability (default: 0.2)
+        norm_layers: List of layer indices where layer normalization is applied
+        latent_in: List of layer indices where latent code is concatenated
+            (for skip connections)
+        weight_norm: Whether to use weight normalization
     """
 
     def __init__(
