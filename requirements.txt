@@ -1,0 +1,8 @@
+torch>=1.10.0
+numpy>=1.21.0
+trimesh>=3.9.0
+scikit-image>=0.18.0
+pyyaml>=5.4.0
+tqdm>=4.62.0
+matplotlib>=3.4.0
+tensorboard>=2.8.0
