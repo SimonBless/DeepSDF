@@ -22,7 +22,7 @@ meshes/
 Use the provided data preparation script:
 
 ```bash
-python examples/prepare_data.py \
+uv run python examples/prepare_data.py \
     --input-dir meshes/ \
     --output-dir data/sdf_samples/ \
     --num-samples 100000 \
@@ -70,7 +70,7 @@ data:
 ### Basic Training
 
 ```bash
-python examples/train.py \
+uv run python examples/train.py \
     --config my_config.yaml \
     --data-dir data/sdf_samples/ \
     --output-dir output/
@@ -79,7 +79,7 @@ python examples/train.py \
 ### Resume from Checkpoint
 
 ```bash
-python examples/train.py \
+uv run python examples/train.py \
     --config my_config.yaml \
     --data-dir data/sdf_samples/ \
     --output-dir output/ \
@@ -93,7 +93,7 @@ python examples/train.py \
 Monitor training progress using TensorBoard:
 
 ```bash
-tensorboard --logdir output/my_experiment/logs/
+uv run tensorboard --logdir output/my_experiment/logs/
 ```
 
 Open your browser to `http://localhost:6006` to view:

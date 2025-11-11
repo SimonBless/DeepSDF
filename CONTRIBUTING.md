@@ -11,14 +11,23 @@ Thank you for your interest in contributing to DeepSDF! This document provides g
    cd DeepSDF
    ```
 
-3. Install in development mode:
+3. Install uv if you haven't already:
    ```bash
-   pip install -e ".[dev]"
+   # On macOS and Linux
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   
+   # On Windows
+   powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
    ```
 
-4. Install pre-commit hooks:
+4. Install in development mode:
    ```bash
-   pre-commit install
+   uv sync --all-extras
+   ```
+
+5. Install pre-commit hooks:
+   ```bash
+   uv run pre-commit install
    ```
 
 ## Code Quality Standards
@@ -29,28 +38,28 @@ We maintain high code quality standards. All contributions must:
 
 Format your code with Black:
 ```bash
-black deepsdf/ examples/ tests/
+uv run black deepsdf/ examples/ tests/
 ```
 
 ### 2. Pass Linting
 
 Ensure no linting errors:
 ```bash
-flake8 deepsdf/ examples/ tests/
+uv run flake8 deepsdf/ examples/ tests/
 ```
 
 ### 3. Pass Type Checking
 
 Verify type hints:
 ```bash
-mypy deepsdf/ --ignore-missing-imports
+uv run mypy deepsdf/ --ignore-missing-imports
 ```
 
 ### 4. Pass Tests
 
 All tests must pass:
 ```bash
-pytest tests/ -v
+uv run pytest tests/ -v
 ```
 
 ## Code Style Guidelines
@@ -129,13 +138,13 @@ def test_decoder_forward_pass() -> None:
 
 ```bash
 # Run all tests
-pytest tests/
+uv run pytest tests/
 
 # Run with coverage
-pytest tests/ --cov=deepsdf
+uv run pytest tests/ --cov=deepsdf
 
 # Run specific test
-pytest tests/test_decoder.py::test_decoder_forward
+uv run pytest tests/test_decoder.py::test_decoder_forward
 ```
 
 ## Pull Request Process
@@ -152,10 +161,10 @@ pytest tests/test_decoder.py::test_decoder_forward
 
 3. **Run Quality Checks**
    ```bash
-   black deepsdf/ examples/ tests/
-   flake8 deepsdf/ examples/ tests/
-   mypy deepsdf/ --ignore-missing-imports
-   pytest tests/
+   uv run black deepsdf/ examples/ tests/
+   uv run flake8 deepsdf/ examples/ tests/
+   uv run mypy deepsdf/ --ignore-missing-imports
+   uv run pytest tests/
    ```
 
 4. **Commit Changes**

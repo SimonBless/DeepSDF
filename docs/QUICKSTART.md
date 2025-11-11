@@ -4,16 +4,28 @@ Get started with DeepSDF in minutes!
 
 ## Installation
 
+First, install [uv](https://github.com/astral-sh/uv) if you haven't already:
+
+```bash
+# On macOS and Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# On Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Then clone and install DeepSDF:
+
 ```bash
 # Clone the repository
 git clone https://github.com/SimonBless/DeepSDF.git
 cd DeepSDF
 
 # Install the package
-pip install -e .
+uv sync
 
-# For development
-pip install -e ".[dev]"
+# For development (includes test tools, linters, etc.)
+uv sync --all-extras
 ```
 
 ## 1. Prepare Your Data
@@ -37,7 +49,7 @@ np.savez('data/shape_001.npz', points=points, sdf=sdf_values)
 ### Option B: Use the Data Preparation Script
 
 ```bash
-python examples/prepare_data.py \
+uv run python examples/prepare_data.py \
     --input-dir meshes/ \
     --output-dir data/sdf_samples/ \
     --num-samples 100000
@@ -69,7 +81,7 @@ trainer.train(num_epochs=100)
 ### Using the Training Script
 
 ```bash
-python examples/train.py \
+uv run python examples/train.py \
     --config deepsdf/configs/default_config.yaml \
     --data-dir data/sdf_samples/ \
     --output-dir output/
@@ -101,7 +113,7 @@ reconstructor.save_mesh(mesh, 'output/reconstructed.obj')
 
 ```bash
 # Reconstruct from checkpoint
-python examples/reconstruct.py \
+uv run python examples/reconstruct.py \
     --checkpoint output/my_experiment/checkpoints/latest.pth \
     --num-random 5 \
     --resolution 256 \
@@ -113,7 +125,7 @@ python examples/reconstruct.py \
 Start TensorBoard to monitor training:
 
 ```bash
-tensorboard --logdir output/my_experiment/logs/
+uv run tensorboard --logdir output/my_experiment/logs/
 ```
 
 Open your browser to http://localhost:6006
@@ -154,17 +166,17 @@ Open your browser to http://localhost:6006
 
 ```bash
 # 1. Prepare data
-python examples/prepare_data.py \
+uv run python examples/prepare_data.py \
     --input-dir meshes/ \
     --output-dir data/sdf_samples/
 
 # 2. Train model
-python examples/train.py \
+uv run python examples/train.py \
     --data-dir data/sdf_samples/ \
     --output-dir output/
 
 # 3. Reconstruct shapes
-python examples/reconstruct.py \
+uv run python examples/reconstruct.py \
     --checkpoint output/deepsdf_experiment/checkpoints/latest.pth \
     --num-random 10 \
     --output-dir reconstructions/

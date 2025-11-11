@@ -5,7 +5,7 @@ A modern, clean reimplementation of the [DeepSDF paper](https://arxiv.org/abs/19
 ## Features
 
 - 🏗️ **Modular Architecture**: Clean separation of concerns with well-defined modules
-- 📦 **Modern Python Packaging**: Proper setup.py, pyproject.toml, and requirements management
+- 📦 **Modern Python Packaging**: Using uv package manager with pyproject.toml
 - 🎯 **Type Hints**: Full type annotations throughout the codebase
 - 📚 **Comprehensive Documentation**: Detailed docstrings and usage examples
 - ⚙️ **Configuration-Driven**: YAML/JSON configuration files for easy experimentation
@@ -14,18 +14,30 @@ A modern, clean reimplementation of the [DeepSDF paper](https://arxiv.org/abs/19
 
 ## Installation
 
+### Prerequisites
+
+First, install [uv](https://github.com/astral-sh/uv) if you haven't already:
+
+```bash
+# On macOS and Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# On Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
 ### From Source
 
 ```bash
 git clone https://github.com/SimonBless/DeepSDF.git
 cd DeepSDF
-pip install -e .
+uv sync
 ```
 
 ### Development Installation
 
 ```bash
-pip install -e ".[dev]"
+uv sync --all-extras
 ```
 
 ## Quick Start
@@ -135,8 +147,7 @@ DeepSDF/
 │   └── ...                      # Unit and integration tests
 ├── setup.py
 ├── pyproject.toml
-├── requirements.txt
-├── requirements-dev.txt
+├── pyproject.toml
 └── README.md
 ```
 
@@ -167,25 +178,25 @@ Output: Signed distance value (1-dim)
 ### Running Tests
 
 ```bash
-pytest tests/
+uv run pytest tests/
 ```
 
 ### Code Formatting
 
 ```bash
-black deepsdf/
+uv run black deepsdf/
 ```
 
 ### Type Checking
 
 ```bash
-mypy deepsdf/
+uv run mypy deepsdf/
 ```
 
 ### Linting
 
 ```bash
-flake8 deepsdf/
+uv run flake8 deepsdf/
 ```
 
 ## Citation
