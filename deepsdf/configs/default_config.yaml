@@ -1,0 +1,31 @@
+# Default configuration for DeepSDF
+
+experiment_name: deepsdf_experiment
+output_dir: ./output
+
+model:
+  latent_size: 256
+  hidden_dims: [512, 512, 512, 512, 512, 512, 512, 512]
+  dropout_prob: 0.2
+  norm_layers: [0, 1, 2, 3, 4, 5, 6, 7]
+  latent_in: [4]
+  weight_norm: true
+
+training:
+  batch_size: 32
+  num_epochs: 2000
+  learning_rate: 0.0001
+  latent_lr: 0.001
+  latent_reg_lambda: 0.0001
+  clamp_dist: 0.1
+  num_samples_per_shape: 10000
+  checkpoint_every: 100
+  log_every: 10
+  num_workers: 4
+  device: cuda
+
+data:
+  data_dir: ./data
+  train_split: train
+  val_split: val
+  test_split: test
